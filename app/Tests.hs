@@ -5,20 +5,20 @@ import Debug.Trace ( traceShowM )
 
 import Common (Problem, bimap)
 
-data Tests a b = Tests {run :: String -> Maybe String, inputs:: [String], expectedOutputs :: [String]}
+data Tests a b = Tests {run :: a -> Maybe b, inputs:: [a], expectedOutputs :: [b]}
 
-runTests :: (Show a, Show b) => Tests a b -> IO()
+runTests :: (Show a, Show b, Eq b) => Tests a b -> IO()
 runTests tests = do
     let results = zip (map (run tests) (inputs tests)) (expectedOutputs tests)
     traceShowM results
     let errors = filter (not . presentAndEqual) results
     case errors of
         [] -> putStrLn "All tests passed!"
-        _ -> putStrLn $ "Tests failed: " ++ show (annotateErrors errors)
+        _ -> putStrLn $ "Tests failed: " ++ show (annotateErrors (map (bimap show show) errors))
 
   where
-    annotateErrors :: [(Maybe String, String)] -> [(String, String)]
-    annotateErrors = map (bimap (\m -> "Output: " ++ show m) ("Expected: " ++))
+    annotateErrors :: [(String, String)] -> [(String, String)]
+    annotateErrors = map (bimap ("Output: " ++) ("Expected: " ++))
 
     presentAndEqual :: (Eq a) => (Maybe a, a) -> Bool
     presentAndEqual (Just a, b) = a == b

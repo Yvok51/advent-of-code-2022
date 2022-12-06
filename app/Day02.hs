@@ -93,7 +93,3 @@ parseHard s = sequence $ map ((=<<) fromMaybeTuple) $ map (fmap (\(op, out) -> (
         fromMaybeTuple (Just a, Just b) = Just (a, b)
         fromMaybeTuple _ = Nothing
 
-makeTuple :: [a] -> Maybe (a, a)
-makeTuple [a, b] = Just (a, b)
-makeTuple _ = Nothing
-

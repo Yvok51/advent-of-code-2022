@@ -15,8 +15,8 @@ day = do
     let inputFilename = "app" </> "inputs" </> "04.txt"
     runProblem inputFilename easy
     runProblem inputFilename hard
-    runTests testsEasy
-    runTests testsHard
+    -- runTests testsEasy
+    -- runTests testsHard
 
 solveEasy :: [(Range, Range)] -> Maybe Int
 solveEasy input = Just $ countElem True $ map (uncurry isWhollyContained) input
@@ -53,12 +53,12 @@ breakElem c s = (takeWhile (/= c) s, drop 1 $ dropWhile (/= c) s)
 countElem :: (Eq a) => a -> [a] -> Int
 countElem a = length . filter (== a)
 
-testsEasy :: Tests [(String, String)] Int
+testsEasy :: Tests String String
 testsEasy = Tests {run = runProblemString (Problem parseEasy solveEasy show)
                   , inputs = ["2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8"]
                   , expectedOutputs = ["2"]}
 
-testsHard :: Tests [(String, String)] Int
+testsHard :: Tests String String
 testsHard = Tests {run = runProblemString (Problem parseHard solveHard show)
                   , inputs = ["2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8"]
                   , expectedOutputs = ["4"]}

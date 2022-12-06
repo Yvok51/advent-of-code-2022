@@ -42,3 +42,7 @@ eitherToMaybe = \case
 
 bimap :: (a -> b) -> (c -> d) -> (a, c) -> (b, d)
 bimap f g p = (f (fst p), g (snd p))
+
+makeTuple :: [a] -> Maybe (a, a)
+makeTuple [a, b] = Just (a, b)
+makeTuple _ = Nothing

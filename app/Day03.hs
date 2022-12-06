@@ -48,7 +48,7 @@ letterValue c | isLower c = ord c - ord 'a' + 1
 trimap :: (a -> b) -> (c -> d) -> (e -> f) -> (a, c, e) -> (b, d, f)
 trimap f g h (a, b, c) = (f a, g b, h c)
 
-testsEasy :: Tests [(String, String)] Int
+testsEasy :: Tests String String
 testsEasy = Tests {run = runProblemString (Problem parseEasy solveEasy show)
                   , inputs = ["vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw"]
                   , expectedOutputs = ["157"]}
