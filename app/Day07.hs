@@ -2,7 +2,7 @@ module Day07 where
 
 import Text.Read (readMaybe)
 import System.FilePath ((</>))
-import Data.List (intersperse, inits, foldl')
+import Data.List (intersperse, tails, foldl')
 import qualified Data.Map as M
 
 import Common
@@ -18,7 +18,7 @@ day = do
     -- runTests testsEasy
     -- runTests testsHard
 
-solveHard :: M.Map String Int -> Maybe Int
+solveHard :: M.Map [String] Int -> Maybe Int
 solveHard m = case needToFree of
     Just n -> safeMinimum $ filter (>= n) $ M.elems m 
     Nothing -> Nothing
@@ -26,31 +26,34 @@ solveHard m = case needToFree of
         available = 70000000
         needed = 30000000
 
-        used = M.lookup "/" m
+        used = M.lookup [] m
         free = fmap (available -) used
         needToFree = fmap (needed -) free
 
-solveEasy :: M.Map String Int -> Maybe Int
+solveEasy :: M.Map [String] Int -> Maybe Int
 solveEasy = Just . sum . M.filter (<= 100000)
 
-parseEasy :: String -> Maybe (M.Map String Int)
+parseEasy :: String -> Maybe (M.Map [String] Int)
 parseEasy s = Just $ fst $ foldl' readCommand (M.empty, []) $ lines s
 
-readCommand :: (M.Map String Int, [String]) -> String -> (M.Map String Int, [String])
+readCommand :: (M.Map [String] Int, [String]) -> String -> (M.Map [String] Int, [String])
 readCommand (m, path) command = case words command of
-    ["$", "cd", ".."] -> (m, init path)
+    ["$", "cd", ".."] -> (m, tail path)
     ["$", "cd", "/"] -> (m, [])
-    ["$", "cd", relPath ] -> (m, path ++ [relPath])
+    ["$", "cd", relPath ] -> (m, relPath : path)
     [sizeOrDir, name] -> case readMaybe sizeOrDir :: Maybe Int of
-        Just size -> (updateAllPaths m (getPaths path) size, path)
+        Just size -> (updateAllPaths' m (getPaths path) size, path)
         Nothing -> (m, path)
     _ -> (m, path)
 
-updateAllPaths :: M.Map String Int -> [String] -> Int -> M.Map String Int
-updateAllPaths m paths size = foldl' (\m' path -> M.insertWith (+) path size m') m paths
+-- updateAllPaths :: M.Map String Int -> [String] -> Int -> M.Map String Int
+-- updateAllPaths m paths size = foldl' (\m' path -> M.insertWith (+) path size m') m paths
 
-getPaths :: [String] -> [String]
-getPaths path = map (concat . (:) "/" . intersperse "/") $ inits path
+updateAllPaths' :: M.Map [String] Int -> [[String]] -> Int -> M.Map [String] Int
+updateAllPaths' m paths size = M.unionWith (+) m $ M.fromList $ zip paths (repeat size)
+
+getPaths :: [String] -> [[String]]
+getPaths = tails --map (concat . (:) "/" . intersperse "/") $
 
 safeMinimum :: Ord a => [a] -> Maybe a
 safeMinimum [] = Nothing
