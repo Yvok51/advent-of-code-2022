@@ -1,8 +1,6 @@
 module Day10 where
 
-import           Data.List                      ( intercalate
-                                                , scanl'
-                                                )
+import           Data.List                      ( scanl' )
 import           Data.List.Split                ( chunksOf )
 import           Data.Void
 import           System.FilePath                ( (</>) )
@@ -28,7 +26,7 @@ data CPUState = CPUState
 day :: IO ()
 day = do
   let easy          = Problem parseDay solveEasy show
-  let hard          = Problem parseDay solveHard (intercalate "\n")
+  let hard          = Problem parseDay solveHard unlines
   let inputFilename = "app" </> "inputs" </> "10.txt"
   runProblem inputFilename easy
   runProblem inputFilename hard

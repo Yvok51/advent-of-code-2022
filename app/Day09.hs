@@ -128,8 +128,7 @@ parserMove = do
     , char 'R' >> pure (Direction 1 0)
     ]
   char ' '
-  num <- L.decimal
-  return $ Move dir num
+  Move dir <$> L.decimal
 
 testsEasy :: Tests String String
 testsEasy = Tests { run = runProblemString (Problem parseDay solveEasy show)

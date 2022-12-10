@@ -20,11 +20,11 @@ runProblem path p = do
   input <- readFile path
 
   let maybeResult = do
-        a <- parseInput p $ input
+        a <- parseInput p input
         traceShowM a
-        b <- solve p $ a
+        b <- solve p a
         traceShowM b
-        pure $ printOutput p $ b
+        pure $ printOutput p b
 
   case maybeResult of
     Just result -> putStrLn result
@@ -32,11 +32,11 @@ runProblem path p = do
 
 runProblemString :: (Show a, Show b) => Problem a b -> String -> Maybe String
 runProblemString p input = do
-  a <- parseInput p $ input
+  a <- parseInput p input
   traceShowM a
-  b <- solve p $ a
+  b <- solve p a
   traceShowM b
-  return $ printOutput p $ b
+  return $ printOutput p b
 
 
 eitherToMaybe :: Either e a -> Maybe a
