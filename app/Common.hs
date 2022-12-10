@@ -4,12 +4,16 @@
 
 module Common where
 
-import Debug.Trace ( traceShowM )
-import Data.Maybe (fromMaybe)
+import           Data.Maybe                     ( fromMaybe )
+import           Debug.Trace                    ( traceShowM )
 
 data Difficulty = Easy | Hard
 
-data Problem a b = Problem {parseInput :: String -> Maybe a, solve :: a -> Maybe b, printOutput :: b -> String}
+data Problem a b = Problem
+  { parseInput  :: String -> Maybe a
+  , solve       :: a -> Maybe b
+  , printOutput :: b -> String
+  }
 
 runProblem :: (Show a, Show b) => FilePath -> Problem a b -> IO ()
 runProblem path p = do
@@ -28,11 +32,11 @@ runProblem path p = do
 
 runProblemString :: (Show a, Show b) => Problem a b -> String -> Maybe String
 runProblemString p input = do
-    a <- parseInput p $ input
-    traceShowM a
-    b <- solve p $ a
-    traceShowM b
-    return $ printOutput p $ b
+  a <- parseInput p $ input
+  traceShowM a
+  b <- solve p $ a
+  traceShowM b
+  return $ printOutput p $ b
 
 
 eitherToMaybe :: Either e a -> Maybe a
@@ -45,4 +49,4 @@ bimap f g p = (f (fst p), g (snd p))
 
 makeTuple :: [a] -> Maybe (a, a)
 makeTuple [a, b] = Just (a, b)
-makeTuple _ = Nothing
+makeTuple _      = Nothing
