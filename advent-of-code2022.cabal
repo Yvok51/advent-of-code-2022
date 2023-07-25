@@ -3,18 +3,20 @@ name:               advent-of-code2022
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
--- synopsis:
+synopsis: Advent of Code 2022 solutions
 
 -- A longer description of the package.
--- description:
+description: Advent of Code 2022 solutions
 
 -- A URL where users can report bugs.
 -- bug-reports:
 
 -- The license under which the package is released.
--- license:
-author:             tichymi5
+license:
+author:             Michal Tichý
 maintainer:         michal.tichy.y@email.cz
+
+source-repository: https://github.com/Yvok51/advent-of-code-2022
 
 -- A copyright notice.
 -- copyright:
@@ -29,7 +31,7 @@ executable advent-of-code2022
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends: base ^>=4.14.3.0, filepath, split, containers, megaparsec
-    other-modules: Common, Tests, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10
+    build-depends: base>=4.14.3.0, filepath, split, containers, megaparsec, parser-combinators
+    other-modules: Common, Tests, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11, Day12
     hs-source-dirs:   app
     default-language: Haskell2010
