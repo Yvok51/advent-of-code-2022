@@ -1,5 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
+{-# HLINT ignore "Use mapMaybe" #-}
+{-# HLINT ignore "Use map once" #-}
 module Day12 where
 
 import           Data.Void
@@ -13,6 +15,7 @@ import Data.Set (Set, empty, insert, notMember, member, fold)
 
 import           Common
 import           Tests
+import Data.Maybe (catMaybes)
 
 type Height = Int
 
@@ -27,12 +30,19 @@ data Heights = Heights [[Height]] Int Int
 day :: IO ()
 day = do
   let easy          = Problem parseDay solveEasy show
-  -- let hard          = Problem parseDay solveHard show
+  let hard          = Problem parseDayHard solveHard show
   let inputFilename = "app" </> "inputs" </> "12.txt"
   -- runTests testsEasy
   -- runTests testsHard
-  runProblem inputFilename easy
-  -- runProblem inputFilename hard
+  -- runProblem inputFilename easy
+  runProblem inputFilename hard
+
+solveHard :: (Heights, [Point], Point) -> Maybe Int
+solveHard (heights, startPos, endPos) = Just $ minimum correctSolutions
+  where
+    starts = map (\p -> (heights, p, endPos)) startPos
+    solutions = map solveEasy starts
+    correctSolutions = catMaybes solutions
 
 solveEasy :: (Heights, Point, Point) -> Maybe Int
 solveEasy (heights, startPos, endPos) = bfs heights Data.Set.empty $ singleton startPoint
@@ -71,13 +81,21 @@ canClimb currHeight target = currHeight + 1 >= target
 
 -- Parsing
 
+parseDayHard :: String -> Maybe (Heights, [Point], Point)
+parseDayHard input = Just (Heights heights (length (head heights)) (length heights), startPos, endPos)
+  where
+    rows = lines input
+    heights = map (map elevation) rows
+    startPos = findPositions rows 'a'
+    endPos = head $ findPositions rows 'E'
+
 parseDay :: String -> Maybe (Heights, Point, Point)
 parseDay input = Just (Heights heights (length (head heights)) (length heights), startPos, endPos)
   where
     rows = lines input
     heights = map (map elevation) rows
-    startPos = findStartPosition rows
-    endPos = findEndPosition rows
+    startPos = head $ findPositions rows 'S'
+    endPos = head $ findPositions rows 'E'
 
 elevation :: Char -> Height
 elevation c
@@ -85,15 +103,8 @@ elevation c
   | c == 'S' = elevation 'a'
   | c == 'E' = elevation 'z'
 
-findStartPosition :: [[Char]] -> Point
-findStartPosition heights = findPosition heights 'S'
-
-findEndPosition :: [[Char]] -> Point
-findEndPosition heights = findPosition heights 'E'
-
-findPosition :: [[Char]] -> Char -> Point
-findPosition heights wantedChar = snd $ head $ filter (\(c, pos) -> c == wantedChar) $ concat $ decorateHeights heights
-
+findPositions :: [[Char]] -> Char -> [Point]
+findPositions heights wantedChar = map snd $ filter (\(c, pos) -> c == wantedChar) $ concat $ decorateHeights heights
 
 decorateHeights :: [[Char]] -> [[(Char, Point)]]
 decorateHeights heights = map addXCoord $ addYCoord heights
