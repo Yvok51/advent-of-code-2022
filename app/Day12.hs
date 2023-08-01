@@ -1,36 +1,35 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Use tuple-section" #-}
 {-# HLINT ignore "Use mapMaybe" #-}
 {-# HLINT ignore "Use map once" #-}
 module Day12 where
 
-import           Data.Void
-import           System.FilePath                ( (</>) )
-import           Text.Megaparsec
-import           Text.Megaparsec.Char
-import qualified Text.Megaparsec.Char.Lexer    as L
+import Common
 import Data.Char (isAsciiLower, ord)
-import Data.Sequence (singleton, Seq(Empty, (:<|)), fromList, (><))
-import Data.Set (Set, empty, insert, notMember, member, fold)
-
-import           Common
-import           Tests
 import Data.Maybe (catMaybes)
+import Data.Sequence (Seq (Empty, (:<|)), fromList, singleton, (><))
+import Data.Set (Set, empty, fold, insert, member, notMember)
+import Data.Void
+import System.FilePath ((</>))
+import Tests
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
 
 type Height = Int
-
-type CharParser a = Parsec Void String a
 
 type Point = (Int, Int)
 
 data Step = Step Point Int
+
 data Heights = Heights [[Height]] Int Int
-  deriving Show
+  deriving (Show)
 
 day :: IO ()
 day = do
-  let easy          = Problem parseDay solveEasy show
-  let hard          = Problem parseDayHard solveHard show
+  let easy = Problem parseDay solveEasy show
+  let hard = Problem parseDayHard solveHard show
   let inputFilename = "app" </> "inputs" </> "12.txt"
   -- runTests testsEasy
   -- runTests testsHard
