@@ -2,7 +2,7 @@ module Day14 where
 
 import Common (Problem (Problem), runProblem)
 import Data.List.Split (splitOn)
-import Data.Set (Set, fromList, insert, notMember)
+import Data.Set (Set, fromList, insert, member, notMember)
 import System.FilePath ((</>))
 
 data Point = Point Int Int
@@ -11,25 +11,42 @@ data Point = Point Int Int
 day :: IO ()
 day = do
   let easy = Problem parseEasy solveEasy show
-  -- let hard = Problem parseHard solveHard show
+  let hard = Problem parseHard solveHard show
   let inputFilename = "app" </> "inputs" </> "14.txt"
   runProblem inputFilename easy
+  runProblem inputFilename hard
 
-solveEasy :: (Set Point, Point) -> Maybe Int
+solveHard :: (Set Point, Int) -> Maybe Int
+solveHard (still, floor) = Just $ length $ go still floor
+  where
+    go :: Set Point -> Int -> [Set Point]
+    go still floor =
+      if member sandStartPosition still
+        then []
+        else case iteration still floor sandStartPosition of
+          Just next -> next : go next floor
+          Nothing -> []
+
+    iteration :: Set Point -> Int -> Point -> Maybe (Set Point)
+    iteration still floor sand@(Point _ y)
+      | y == (floor - 1) || isAtRest still sand = Just $ insert sand still
+      | otherwise = iteration still floor $ step still sand
+
+solveEasy :: (Set Point, Int) -> Maybe Int
 solveEasy (points, lowestBlock) = Just $ length $ go points lowestBlock
   where
-    go :: Set Point -> Point -> [Set Point]
+    go :: Set Point -> Int -> [Set Point]
     go still lowestBlock = case nextStill of
       (Just next) -> next : go next lowestBlock
       Nothing -> []
       where
         nextStill = iteration still lowestBlock sandStartPosition
 
-iteration :: Set Point -> Point -> Point -> Maybe (Set Point)
-iteration still lowestBlock@(Point _ minY) sand@(Point x y)
-  | isAtRest still sand = Just $ insert sand still
-  | y > minY = Nothing
-  | otherwise = iteration still lowestBlock $ step still sand
+    iteration :: Set Point -> Int -> Point -> Maybe (Set Point)
+    iteration still lowestBlock sand@(Point x y)
+      | isAtRest still sand = Just $ insert sand still
+      | y > lowestBlock = Nothing
+      | otherwise = iteration still lowestBlock $ step still sand
 
 step :: Set Point -> Point -> Point
 step still curr = head $ availablePositions still curr
@@ -46,8 +63,13 @@ nextPositions (Point x y) = [Point x (y + 1), Point (x - 1) (y + 1), Point (x + 
 sandStartPosition :: Point
 sandStartPosition = Point 500 0
 
-parseEasy :: String -> Maybe (Set Point, Point)
-parseEasy input = Just (fromList points, lowestBlock points)
+parseHard :: String -> Maybe (Set Point, Int)
+parseHard input = case parseEasy input of
+  Just (still, minY) -> Just (still, minY + 2)
+  Nothing -> Nothing
+
+parseEasy :: String -> Maybe (Set Point, Int)
+parseEasy input = Just (fromList points, let Point _ y = lowestBlock points in y)
   where
     stringPoints = map (splitOn " -> ") $ lines input
     toPoint s = case "," `splitOn` s of
